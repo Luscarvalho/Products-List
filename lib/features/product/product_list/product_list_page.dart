@@ -47,52 +47,59 @@ class _ProductListPageState extends State<ProductListPage> {
       body: ValueListenableBuilder<bool>(
         valueListenable: _controller.isLoading,
         builder: (context, isLoading, child) {
-          return isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Column(
-                  children: [
-                    ProductSearchField(
-                      controller: _searchController,
-                      onSearch: _controller.searchProducts,
-                      onClear: () {
-                        _searchController.clear();
-                        _controller.searchProducts('');
-                      },
-                    ),
-                    ValueListenableBuilder<String?>(
-                      valueListenable: _controller.error,
-                      builder: (context, error, child) {
-                        return error != null
-                            ? ProductError(
-                                loadProducts: _controller.loadProducts,
-                              )
-                            : const SizedBox.shrink();
-                      },
-                    ),
-                    Expanded(
-                      child: ValueListenableBuilder<List<ProductModel>>(
-                        valueListenable: _controller.filteredProducts,
-                        builder: (context, products, child) {
-                          if (products.isEmpty) {
-                            return const ProductEmpty();
-                          }
-                          return ValueListenableBuilder<List<ProductModel>>(
-                            valueListenable: _controller.favoritesNotifier,
-                            builder: (context, favorites, child) {
-                              return ProductList(
-                                products: products,
-                                onToggleFavorite: _controller.toggleFavorite,
-                                isFavorite: _controller.isFavorite,
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                );
+          if (isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return ValueListenableBuilder(
+            valueListenable: _controller.error,
+            builder: (context, error, child) {
+              if (error != null) {
+                return ProductError(loadProducts: _controller.loadProducts);
+              }
+              return Column(
+                children: [
+                  _buildSearchField(),
+                  _buildProductList(),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  ProductSearchField _buildSearchField() {
+    return ProductSearchField(
+      controller: _searchController,
+      onSearch: _controller.searchProducts,
+      onClear: () {
+        _searchController.clear();
+        _controller.searchProducts('');
+      },
+    );
+  }
+
+  Expanded _buildProductList() {
+    return Expanded(
+      child: ValueListenableBuilder<List<ProductModel>>(
+        valueListenable: _controller.filteredProducts,
+        builder: (context, products, child) {
+          if (products.isEmpty) {
+            return const ProductEmpty();
+          }
+          return ValueListenableBuilder<List<ProductModel>>(
+            valueListenable: _controller.favoritesNotifier,
+            builder: (context, favorites, child) {
+              return ProductList(
+                products: products,
+                onToggleFavorite: _controller.toggleFavorite,
+                isFavorite: _controller.isFavorite,
+              );
+            },
+          );
         },
       ),
     );
