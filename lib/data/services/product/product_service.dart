@@ -5,31 +5,28 @@ import '../../../domain/models/product/product_model.dart';
 
 class ProductService implements IProductService {
   final IProductLocalRepository _localRepository;
+  final ValueNotifier<List<ProductModel>> _favorites = ValueNotifier([]);
 
   ProductService({
     required IProductLocalRepository localRepository,
   }) : _localRepository = localRepository;
 
   @override
-  final ValueNotifier<List<ProductModel>> favoritesNotifier =
-      ValueNotifier<List<ProductModel>>([]);
-
-  @override
-  List<ProductModel> get favorites => favoritesNotifier.value;
+  ValueNotifier<List<ProductModel>> get favorites => _favorites;
 
   @override
   bool isFavorite(int id) =>
-      favoritesNotifier.value.any((product) => product.id == id);
+      _favorites.value.any((product) => product.id == id);
 
   @override
   Future<void> loadFavorites() async {
     final favoritesList = await _localRepository.getFavorites();
-    favoritesNotifier.value = favoritesList.toList();
+    _favorites.value = favoritesList.toList();
   }
 
   @override
   Future<void> toggleFavorite(ProductModel product) async {
-    final currentFavorites = favoritesNotifier.value.toList();
+    final currentFavorites = favorites.value.toList();
 
     if (isFavorite(product.id)) {
       currentFavorites.removeWhere((p) => p.id == product.id);
@@ -39,6 +36,6 @@ class ProductService implements IProductService {
 
     await _localRepository.saveFavorites(currentFavorites);
 
-    favoritesNotifier.value = currentFavorites;
+    _favorites.value = currentFavorites;
   }
 }

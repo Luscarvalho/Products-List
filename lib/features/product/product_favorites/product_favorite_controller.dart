@@ -9,8 +9,8 @@ class ProductFavoritesController {
     required IProductService favoritesService,
   }) : _favoritesService = favoritesService;
 
-  ValueNotifier<List<ProductModel>> get favoritesNotifier =>
-      _favoritesService.favoritesNotifier;
+  ValueNotifier<List<ProductModel>> get favorites =>
+      _favoritesService.favorites;
 
   bool isFavorite(int id) => _favoritesService.isFavorite(id);
 

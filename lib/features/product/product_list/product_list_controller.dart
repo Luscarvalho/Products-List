@@ -7,13 +7,13 @@ class ProductListController {
   final IProductRepository _repository;
   final IProductService _favoritesService;
 
-  final ValueNotifier<List<ProductModel>> allProductsNotifier =
+  final ValueNotifier<List<ProductModel>> allProducts =
       ValueNotifier<List<ProductModel>>([]);
-  final ValueNotifier<List<ProductModel>> filteredProductsNotifier =
+  final ValueNotifier<List<ProductModel>> filteredProducts =
       ValueNotifier<List<ProductModel>>([]);
-  final ValueNotifier<bool> isLoadingNotifier = ValueNotifier<bool>(false);
-  final ValueNotifier<String?> errorNotifier = ValueNotifier<String?>(null);
-  final ValueNotifier<String> searchQueryNotifier = ValueNotifier<String>('');
+  final ValueNotifier<bool> isLoading = ValueNotifier<bool>(false);
+  final ValueNotifier<String?> error = ValueNotifier<String?>(null);
+  final ValueNotifier<String> searchQuery = ValueNotifier<String>('');
 
   ProductListController({
     required IProductRepository repository,
@@ -21,42 +21,37 @@ class ProductListController {
   })  : _repository = repository,
         _favoritesService = favoritesService;
 
-  List<ProductModel> get products => filteredProductsNotifier.value;
-  bool get isLoading => isLoadingNotifier.value;
-  String? get error => errorNotifier.value;
-  String get searchQuery => searchQueryNotifier.value;
-
   ValueNotifier<List<ProductModel>> get favoritesNotifier =>
-      _favoritesService.favoritesNotifier;
+      _favoritesService.favorites;
 
   Future<void> loadProducts() async {
     try {
-      isLoadingNotifier.value = true;
-      errorNotifier.value = null;
+      isLoading.value = true;
+      error.value = null;
 
       final products = await _repository.getProducts();
-      allProductsNotifier.value = products;
+      allProducts.value = products;
       _filterProducts();
     } catch (e) {
-      errorNotifier.value = e.toString();
+      error.value = e.toString();
     } finally {
-      isLoadingNotifier.value = false;
+      isLoading.value = false;
     }
   }
 
   void searchProducts(String query) {
-    searchQueryNotifier.value = query.toLowerCase();
+    searchQuery.value = query.toLowerCase();
     _filterProducts();
   }
 
   void _filterProducts() {
-    final query = searchQueryNotifier.value;
-    final allProducts = allProductsNotifier.value;
+    final query = searchQuery.value;
+    final products = allProducts.value;
 
     if (query.isEmpty) {
-      filteredProductsNotifier.value = allProducts.toList();
+      filteredProducts.value = products.toList();
     } else {
-      filteredProductsNotifier.value = allProducts
+      filteredProducts.value = products
           .where((product) =>
               product.title.toLowerCase().contains(query) ||
               product.description.toLowerCase().contains(query))

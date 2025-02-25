@@ -45,7 +45,7 @@ class _ProductListPageState extends State<ProductListPage> {
         title: 'Produtos',
       ),
       body: ValueListenableBuilder<bool>(
-        valueListenable: _controller.isLoadingNotifier,
+        valueListenable: _controller.isLoading,
         builder: (context, isLoading, child) {
           return isLoading
               ? const Center(
@@ -62,7 +62,7 @@ class _ProductListPageState extends State<ProductListPage> {
                       },
                     ),
                     ValueListenableBuilder<String?>(
-                      valueListenable: _controller.errorNotifier,
+                      valueListenable: _controller.error,
                       builder: (context, error, child) {
                         return error != null
                             ? ProductError(
@@ -73,7 +73,7 @@ class _ProductListPageState extends State<ProductListPage> {
                     ),
                     Expanded(
                       child: ValueListenableBuilder<List<ProductModel>>(
-                        valueListenable: _controller.filteredProductsNotifier,
+                        valueListenable: _controller.filteredProducts,
                         builder: (context, products, child) {
                           if (products.isEmpty) {
                             return const ProductEmpty();
@@ -82,7 +82,7 @@ class _ProductListPageState extends State<ProductListPage> {
                             valueListenable: _controller.favoritesNotifier,
                             builder: (context, favorites, child) {
                               return ProductList(
-                                products: _controller.products,
+                                products: products,
                                 onToggleFavorite: _controller.toggleFavorite,
                                 isFavorite: _controller.isFavorite,
                               );

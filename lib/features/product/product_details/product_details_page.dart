@@ -20,7 +20,7 @@ class ProductDetailsPage extends StatelessWidget {
         title: 'Detalhes do Produto',
         actions: [
           ValueListenableBuilder<List<ProductModel>>(
-            valueListenable: controller.favoritesNotifier,
+            valueListenable: controller.favorites,
             builder: (context, _, __) {
               return Padding(
                 padding: const EdgeInsets.only(right: 10),

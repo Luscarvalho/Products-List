@@ -16,7 +16,7 @@ class ProductFavoritesPage extends StatelessWidget {
         title: const Text('Favoritos'),
       ),
       body: ValueListenableBuilder<List<ProductModel>>(
-        valueListenable: controller.favoritesNotifier,
+        valueListenable: controller.favorites,
         builder: (context, favorites, _) {
           if (favorites.isEmpty) {
             return const ProductEmpty();
