@@ -1,4 +1,4 @@
-import 'package:flulu/domain/models/product/rating_model.dart';
+import 'package:flulu/domain/models/product/product_rating_model.dart';
 
 class ProductModel {
   final int id;

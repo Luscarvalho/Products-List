@@ -1,11 +1,11 @@
 import 'package:flulu/data/repositories/product/product_repository_interface.dart';
-import 'package:flulu/data/services/product/product_favorites_service.dart';
+import 'package:flulu/data/services/product/product_service_interface.dart';
 import 'package:flutter/material.dart';
 import '../../../domain/models/product/product_model.dart';
 
 class ProductListController {
   final IProductRepository _repository;
-  final FavoritesService _favoritesService;
+  final IProductService _favoritesService;
 
   final ValueNotifier<List<ProductModel>> allProductsNotifier =
       ValueNotifier<List<ProductModel>>([]);
@@ -17,7 +17,7 @@ class ProductListController {
 
   ProductListController({
     required IProductRepository repository,
-    required FavoritesService favoritesService,
+    required IProductService favoritesService,
   })  : _repository = repository,
         _favoritesService = favoritesService;
 

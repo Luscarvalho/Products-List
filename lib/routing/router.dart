@@ -1,7 +1,7 @@
 import 'package:flulu/domain/models/product/product_model.dart';
-import 'package:flulu/features/product/product_details/product_details.dart';
+import 'package:flulu/features/product/product_details/product_details_page.dart';
 import 'package:flulu/features/product/product_favorites/product_favorites_page.dart';
-import 'package:flulu/features/product/product_list/product_list.dart';
+import 'package:flulu/features/product/product_list/product_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

@@ -1,26 +1,33 @@
 import 'package:flulu/data/repositories/product/product_local_repository_interface.dart';
+import 'package:flulu/data/services/product/product_service_interface.dart';
 import 'package:flutter/material.dart';
 import '../../../domain/models/product/product_model.dart';
 
-class FavoritesService {
+class ProductService implements IProductService {
   final IProductLocalRepository _localRepository;
-  final ValueNotifier<List<ProductModel>> favoritesNotifier =
-      ValueNotifier<List<ProductModel>>([]);
 
-  FavoritesService({
+  ProductService({
     required IProductLocalRepository localRepository,
   }) : _localRepository = localRepository;
 
+  @override
+  final ValueNotifier<List<ProductModel>> favoritesNotifier =
+      ValueNotifier<List<ProductModel>>([]);
+
+  @override
   List<ProductModel> get favorites => favoritesNotifier.value;
 
+  @override
   bool isFavorite(int id) =>
       favoritesNotifier.value.any((product) => product.id == id);
 
+  @override
   Future<void> loadFavorites() async {
     final favoritesList = await _localRepository.getFavorites();
     favoritesNotifier.value = favoritesList.toList();
   }
 
+  @override
   Future<void> toggleFavorite(ProductModel product) async {
     final currentFavorites = favoritesNotifier.value.toList();
 
