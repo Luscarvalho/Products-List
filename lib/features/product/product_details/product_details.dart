@@ -1,11 +1,10 @@
-import 'package:flulu/data/services/product/product_favorites_service.dart';
 import 'package:flulu/domain/models/product/product_model.dart';
 import 'package:flulu/features/product/product_details/product_detail_controller.dart';
 import 'package:flulu/features/product/widgets/app_bar_product.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-class ProductDetailsPage extends StatefulWidget {
+class ProductDetailsPage extends StatelessWidget {
   const ProductDetailsPage({
     super.key,
     required this.product,
@@ -14,23 +13,8 @@ class ProductDetailsPage extends StatefulWidget {
   final ProductModel product;
 
   @override
-  State<ProductDetailsPage> createState() => _ProductDetailsPageState();
-}
-
-class _ProductDetailsPageState extends State<ProductDetailsPage> {
-  late final ProductDetailsController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    controller = ProductDetailsController(
-      favoritesService: GetIt.I<FavoritesService>(),
-      product: widget.product,
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final controller = GetIt.I<ProductDetailsController>();
     return Scaffold(
       appBar: AppBarProduct(
         title: 'Detalhes do Produto',
@@ -42,13 +26,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 padding: const EdgeInsets.only(right: 10),
                 child: IconButton(
                   icon: Icon(
-                    controller.isFavorite()
+                    controller.isFavorite(product.id)
                         ? Icons.favorite
                         : Icons.favorite_border,
-                    color:
-                        controller.isFavorite() ? Colors.red : Colors.grey[800],
+                    color: controller.isFavorite(product.id)
+                        ? Colors.red
+                        : Colors.grey[800],
                   ),
-                  onPressed: () => controller.toggleFavorite(),
+                  onPressed: () => controller.toggleFavorite(product),
                 ),
               );
             },
@@ -74,14 +59,14 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.network(
-                    widget.product.image,
+                    product.image,
                     width: double.infinity,
                     height: 300,
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    widget.product.title,
+                    product.title,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -98,7 +83,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             color: Colors.amber,
                           ),
                           Text(
-                            ' ${widget.product.rating.rate} (${widget.product.rating.count} avaliações)',
+                            ' ${product.rating.rate} (${product.rating.count} avaliações)',
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 16,
@@ -108,7 +93,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         ],
                       ),
                       Text(
-                        'R\$ ${widget.product.price.toStringAsFixed(2)}',
+                        'R\$ ${product.price.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -126,7 +111,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         width: 8,
                       ),
                       Text(
-                        widget.product.category,
+                        product.category,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -144,7 +129,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                       ),
                       Expanded(
                         child: Text(
-                          widget.product.description,
+                          product.description,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

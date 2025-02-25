@@ -36,8 +36,9 @@ void setupInjection() {
     ),
   );
 
-  getIt.registerFactory<ProductDetailsController>(
-    () => throw Exception(
-        'ProductDetailsController deve ser criado com o produto específico'),
+  getIt.registerLazySingleton<ProductDetailsController>(
+    () => ProductDetailsController(
+      favoritesService: getIt<FavoritesService>(),
+    ),
   );
 }

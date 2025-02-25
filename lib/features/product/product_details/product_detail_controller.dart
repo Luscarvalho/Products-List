@@ -4,19 +4,17 @@ import '../../../domain/models/product/product_model.dart';
 
 class ProductDetailsController {
   final FavoritesService _favoritesService;
-  final ProductModel product;
 
   ProductDetailsController({
     required FavoritesService favoritesService,
-    required this.product,
   }) : _favoritesService = favoritesService;
 
   ValueNotifier<List<ProductModel>> get favoritesNotifier =>
       _favoritesService.favoritesNotifier;
 
-  bool isFavorite() => _favoritesService.isFavorite(product.id);
+  bool isFavorite(int id) => _favoritesService.isFavorite(id);
 
-  Future<void> toggleFavorite() async {
+  Future<void> toggleFavorite(ProductModel product) async {
     await _favoritesService.toggleFavorite(product);
   }
 }

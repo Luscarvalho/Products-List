@@ -1,4 +1,6 @@
 import 'package:flulu/domain/models/product/product_model.dart';
+import 'package:flulu/features/product/widgets/product_empty.dart';
+import 'package:flulu/features/product/widgets/product_error.dart';
 import 'package:flulu/features/product/widgets/product_search_field.dart';
 import 'package:flulu/features/product/widgets/app_bar_product.dart';
 import 'package:flulu/features/product/widgets/product_list.dart';
@@ -42,51 +44,56 @@ class _ProductListPageState extends State<ProductListPage> {
       appBar: const AppBarProduct(
         title: 'Produtos',
       ),
-      body: Column(
-        children: [
-          ProductSearchField(
-            controller: _searchController,
-            onSearch: _controller.searchProducts,
-            onClear: () {
-              _searchController.clear();
-              _controller.searchProducts('');
-            },
-          ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _controller.isLoadingNotifier,
-            builder: (context, isLoading, child) {
-              return isLoading
-                  ? const CircularProgressIndicator()
-                  : const SizedBox.shrink();
-            },
-          ),
-          ValueListenableBuilder<String?>(
-            valueListenable: _controller.errorNotifier,
-            builder: (context, error, child) {
-              return error != null
-                  ? Text('Erro: $error',
-                      style: const TextStyle(color: Colors.red))
-                  : const SizedBox.shrink();
-            },
-          ),
-          Expanded(
-            child: ValueListenableBuilder<List<ProductModel>>(
-              valueListenable: _controller.filteredProductsNotifier,
-              builder: (context, value, child) {
-                return ValueListenableBuilder<List<ProductModel>>(
-                  valueListenable: _controller.favoritesNotifier,
-                  builder: (context, favorites, child) {
-                    return ProductList(
-                      products: _controller.products,
-                      onToggleFavorite: _controller.toggleFavorite,
-                      isFavorite: _controller.isFavorite,
-                    );
-                  },
+      body: ValueListenableBuilder<bool>(
+        valueListenable: _controller.isLoadingNotifier,
+        builder: (context, isLoading, child) {
+          return isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Column(
+                  children: [
+                    ProductSearchField(
+                      controller: _searchController,
+                      onSearch: _controller.searchProducts,
+                      onClear: () {
+                        _searchController.clear();
+                        _controller.searchProducts('');
+                      },
+                    ),
+                    ValueListenableBuilder<String?>(
+                      valueListenable: _controller.errorNotifier,
+                      builder: (context, error, child) {
+                        return error != null
+                            ? ProductError(
+                                loadProducts: _controller.loadProducts,
+                              )
+                            : const SizedBox.shrink();
+                      },
+                    ),
+                    Expanded(
+                      child: ValueListenableBuilder<List<ProductModel>>(
+                        valueListenable: _controller.filteredProductsNotifier,
+                        builder: (context, products, child) {
+                          if (products.isEmpty) {
+                            return const ProductEmpty();
+                          }
+                          return ValueListenableBuilder<List<ProductModel>>(
+                            valueListenable: _controller.favoritesNotifier,
+                            builder: (context, favorites, child) {
+                              return ProductList(
+                                products: _controller.products,
+                                onToggleFavorite: _controller.toggleFavorite,
+                                isFavorite: _controller.isFavorite,
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 );
-              },
-            ),
-          ),
-        ],
+        },
       ),
     );
   }

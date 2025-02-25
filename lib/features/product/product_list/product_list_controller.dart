@@ -54,7 +54,7 @@ class ProductListController {
     final allProducts = allProductsNotifier.value;
 
     if (query.isEmpty) {
-      filteredProductsNotifier.value = List.from(allProducts);
+      filteredProductsNotifier.value = allProducts.toList();
     } else {
       filteredProductsNotifier.value = allProducts
           .where((product) =>
