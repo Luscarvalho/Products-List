@@ -1,30 +1,37 @@
 import 'package:flulu/data/repositories/product/product_local_repository_interface.dart';
+import 'package:flutter/material.dart';
 import '../../../domain/models/product/product_model.dart';
 
 class FavoritesService {
   final IProductLocalRepository _localRepository;
-  final Set<ProductModel> _favorites = {};
+  final ValueNotifier<List<ProductModel>> favoritesNotifier =
+      ValueNotifier<List<ProductModel>>([]);
 
   FavoritesService({
     required IProductLocalRepository localRepository,
   }) : _localRepository = localRepository;
 
-  List<ProductModel> get favorites => _favorites.toList();
+  List<ProductModel> get favorites => favoritesNotifier.value;
 
-  bool isFavorite(int id) => _favorites.any((product) => product.id == id);
+  bool isFavorite(int id) =>
+      favoritesNotifier.value.any((product) => product.id == id);
 
   Future<void> loadFavorites() async {
     final favoritesList = await _localRepository.getFavorites();
-    _favorites.clear();
-    _favorites.addAll(favoritesList);
+    favoritesNotifier.value = favoritesList.toList();
   }
 
   Future<void> toggleFavorite(ProductModel product) async {
+    final currentFavorites = favoritesNotifier.value.toList();
+
     if (isFavorite(product.id)) {
-      _favorites.removeWhere((p) => p.id == product.id);
+      currentFavorites.removeWhere((p) => p.id == product.id);
     } else {
-      _favorites.add(product);
+      currentFavorites.add(product);
     }
-    await _localRepository.saveFavorites(_favorites.toList());
+
+    await _localRepository.saveFavorites(currentFavorites);
+
+    favoritesNotifier.value = currentFavorites;
   }
 }

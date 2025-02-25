@@ -1,10 +1,11 @@
+import 'package:flulu/data/services/product/product_favorites_service.dart';
 import 'package:flulu/domain/models/product/product_model.dart';
-import 'package:flulu/features/product/product_list/product_list_controller.dart';
+import 'package:flulu/features/product/product_details/product_detail_controller.dart';
 import 'package:flulu/features/product/widgets/app_bar_product.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-class ProductDetailsPage extends StatelessWidget {
+class ProductDetailsPage extends StatefulWidget {
   const ProductDetailsPage({
     super.key,
     required this.product,
@@ -13,27 +14,41 @@ class ProductDetailsPage extends StatelessWidget {
   final ProductModel product;
 
   @override
+  State<ProductDetailsPage> createState() => _ProductDetailsPageState();
+}
+
+class _ProductDetailsPageState extends State<ProductDetailsPage> {
+  late final ProductDetailsController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = ProductDetailsController(
+      favoritesService: GetIt.I<FavoritesService>(),
+      product: widget.product,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final controller = GetIt.I<ProductListController>();
     return Scaffold(
       appBar: AppBarProduct(
         title: 'Detalhes do Produto',
         actions: [
-          ListenableBuilder(
-            listenable: controller,
-            builder: (context, _) {
+          ValueListenableBuilder<List<ProductModel>>(
+            valueListenable: controller.favoritesNotifier,
+            builder: (context, _, __) {
               return Padding(
                 padding: const EdgeInsets.only(right: 10),
                 child: IconButton(
                   icon: Icon(
-                    controller.isFavorite(product.id)
+                    controller.isFavorite()
                         ? Icons.favorite
                         : Icons.favorite_border,
-                    color: controller.isFavorite(product.id)
-                        ? Colors.red
-                        : Colors.grey[800],
+                    color:
+                        controller.isFavorite() ? Colors.red : Colors.grey[800],
                   ),
-                  onPressed: () => controller.toggleFavorite(product),
+                  onPressed: () => controller.toggleFavorite(),
                 ),
               );
             },
@@ -59,14 +74,14 @@ class ProductDetailsPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.network(
-                    product.image,
+                    widget.product.image,
                     width: double.infinity,
                     height: 300,
                     fit: BoxFit.contain,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    product.title,
+                    widget.product.title,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w500,
@@ -83,7 +98,7 @@ class ProductDetailsPage extends StatelessWidget {
                             color: Colors.amber,
                           ),
                           Text(
-                            ' ${product.rating.rate} (${product.rating.count} avaliações)',
+                            ' ${widget.product.rating.rate} (${widget.product.rating.count} avaliações)',
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 16,
@@ -93,7 +108,7 @@ class ProductDetailsPage extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        'R\$ ${product.price.toStringAsFixed(2)}',
+                        'R\$ ${widget.product.price.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -111,7 +126,7 @@ class ProductDetailsPage extends StatelessWidget {
                         width: 8,
                       ),
                       Text(
-                        product.category,
+                        widget.product.category,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -129,7 +144,7 @@ class ProductDetailsPage extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          product.description,
+                          widget.product.description,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,

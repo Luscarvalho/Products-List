@@ -1,5 +1,4 @@
-import 'package:flulu/features/product/widgets/product_empty.dart';
-import 'package:flulu/features/product/widgets/product_error.dart';
+import 'package:flulu/domain/models/product/product_model.dart';
 import 'package:flulu/features/product/widgets/product_search_field.dart';
 import 'package:flulu/features/product/widgets/app_bar_product.dart';
 import 'package:flulu/features/product/widgets/product_list.dart';
@@ -53,28 +52,36 @@ class _ProductListPageState extends State<ProductListPage> {
               _controller.searchProducts('');
             },
           ),
+          ValueListenableBuilder<bool>(
+            valueListenable: _controller.isLoadingNotifier,
+            builder: (context, isLoading, child) {
+              return isLoading
+                  ? const CircularProgressIndicator()
+                  : const SizedBox.shrink();
+            },
+          ),
+          ValueListenableBuilder<String?>(
+            valueListenable: _controller.errorNotifier,
+            builder: (context, error, child) {
+              return error != null
+                  ? Text('Erro: $error',
+                      style: const TextStyle(color: Colors.red))
+                  : const SizedBox.shrink();
+            },
+          ),
           Expanded(
-            child: ListenableBuilder(
-              listenable: _controller,
-              builder: (context, _) {
-                if (_controller.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (_controller.error != null) {
-                  return ProductError(
-                    loadProducts: _controller.loadProducts,
-                  );
-                }
-
-                if (_controller.products.isEmpty) {
-                  return const ProductEmpty();
-                }
-
-                return ProductList(
-                  products: _controller.products,
-                  onToggleFavorite: _controller.toggleFavorite,
-                  isFavorite: _controller.isFavorite,
+            child: ValueListenableBuilder<List<ProductModel>>(
+              valueListenable: _controller.filteredProductsNotifier,
+              builder: (context, value, child) {
+                return ValueListenableBuilder<List<ProductModel>>(
+                  valueListenable: _controller.favoritesNotifier,
+                  builder: (context, favorites, child) {
+                    return ProductList(
+                      products: _controller.products,
+                      onToggleFavorite: _controller.toggleFavorite,
+                      isFavorite: _controller.isFavorite,
+                    );
+                  },
                 );
               },
             ),

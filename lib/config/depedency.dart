@@ -4,6 +4,8 @@ import 'package:flulu/data/repositories/product/product_local_repository_interfa
 import 'package:flulu/data/repositories/product/product_repository_interface.dart';
 import 'package:flulu/data/repositories/product/produt_repository.dart';
 import 'package:flulu/data/services/product/product_favorites_service.dart';
+import 'package:flulu/features/product/product_details/product_detail_controller.dart';
+import 'package:flulu/features/product/product_favorites/product_favorite_controller.dart';
 import 'package:flulu/features/product/product_list/product_list_controller.dart';
 import 'package:get_it/get_it.dart';
 
@@ -24,8 +26,18 @@ void setupInjection() {
   getIt.registerLazySingleton<ProductListController>(
     () => ProductListController(
       repository: getIt<IProductRepository>(),
-      localRepository: getIt<IProductLocalRepository>(),
       favoritesService: getIt<FavoritesService>(),
     ),
+  );
+
+  getIt.registerLazySingleton<ProductFavoritesController>(
+    () => ProductFavoritesController(
+      favoritesService: getIt<FavoritesService>(),
+    ),
+  );
+
+  getIt.registerFactory<ProductDetailsController>(
+    () => throw Exception(
+        'ProductDetailsController deve ser criado com o produto específico'),
   );
 }
